@@ -305,6 +305,10 @@ public interface GraphTraversal<S, E> extends Traversal<S, E>, CountTraversal<S,
     ///////////////////// FILTER STEPS /////////////////////
 
     public default GraphTraversal<S, E> filter(final Predicate<Traverser<E>> predicate) {
+        /** allow null filters, just ignore them */
+        if (predicate == null)
+            return this;
+        
         final FilterStep<E> filterStep = new FilterStep<>(this);
         filterStep.setPredicate(predicate);
         return this.addStep(filterStep);
