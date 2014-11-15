@@ -6,7 +6,6 @@ import com.tinkerpop.gremlin.process.computer.traversal.TraversalVertexProgram;
 import com.tinkerpop.gremlin.process.computer.traversal.step.map.ComputerResultStep;
 import com.tinkerpop.gremlin.process.graph.GraphTraversal;
 import com.tinkerpop.gremlin.process.graph.marker.Reversible;
-import com.tinkerpop.gremlin.process.traversers.TraverserGeneratorFactory;
 import com.tinkerpop.gremlin.process.util.SingleIterator;
 import com.tinkerpop.gremlin.process.util.TraversalHelper;
 import com.tinkerpop.gremlin.structure.Graph;
@@ -139,7 +138,7 @@ public interface Traversal<S, E> extends Iterator<E>, Cloneable {
      * @return the n-results in a {@link List}
      */
     public default List<E> next(final int amount) {
-        final List<E> result = new ArrayList<>();
+        final List<E> result = new ArrayList<>(amount);
         int counter = 0;
         while (counter++ < amount && this.hasNext()) {
             result.add(this.next());
@@ -172,15 +171,14 @@ public interface Traversal<S, E> extends Iterator<E>, Cloneable {
      * @return the collection now filled
      */
     public default <C extends Collection<E>> C fill(final C collection) {
-        try {
-            this.applyStrategies(TraversalEngine.STANDARD);
-            // use the end step so the results are bulked
-            final Step<?, E> endStep = TraversalHelper.getEnd(this);
-            while (true) {
-                final Traverser<E> traverser = endStep.next();
-                TraversalHelper.addToCollection(collection, traverser.get(), traverser.bulk());
-            }
-        } catch (final NoSuchElementException ignored) {
+        this.applyStrategies(TraversalEngine.STANDARD);
+        // use the end step so the results are bulked
+        final Step<?, E> endStep = TraversalHelper.getEnd(this);
+        while (endStep.hasNext()) {
+            final Traverser<E> traverser = endStep.next();
+            if (traverser == null)
+                break;
+            TraversalHelper.addToCollection(collection, traverser.get(), traverser.bulk());
         }
         return collection;
     }
@@ -193,15 +191,14 @@ public interface Traversal<S, E> extends Iterator<E>, Cloneable {
      * @return the fully drained traversal
      */
     public default Traversal iterate() {
-        try {
-            this.applyStrategies(TraversalEngine.STANDARD);
-            // use the end step so the results are bulked
-            final Step<?, E> endStep = TraversalHelper.getEnd(this);
-            while (true) {
-                endStep.next();
-            }
-        } catch (final NoSuchElementException ignored) {
+
+        this.applyStrategies(TraversalEngine.STANDARD);
+        // use the end step so the results are bulked
+        final Step<?, E> endStep = TraversalHelper.getEnd(this);
+        while (endStep.hasNext()) {
+            endStep.next();
         }
+        
         return this;
     }
 
@@ -214,12 +211,8 @@ public interface Traversal<S, E> extends Iterator<E>, Cloneable {
      * @param <E2>     the known output type of the traversal
      */
     public default <E2> void forEachRemaining(final Class<E2> endType, final Consumer<E2> consumer) {
-        try {
-            while (true) {
-                consumer.accept((E2) next());
-            }
-        } catch (final NoSuchElementException ignore) {
-
+        while (hasNext()) {
+            consumer.accept((E2) next());
         }
     }
 

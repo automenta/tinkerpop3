@@ -105,8 +105,10 @@ public abstract class AbstractStep<S, E> implements Step<S, E> {
             try {
                 while (true) {
                     this.nextEnd = this.processNextStart();
-                    if (this.nextEnd==null)
+                    if (this.nextEnd==null) {
+                        this.available = false;
                         return false;
+                    }
                     if (this.nextEnd.bulk() != 0) {
                         this.available = true;
                         return true;
