@@ -8,7 +8,7 @@ import com.tinkerpop.gremlin.structure.Vertex;
 /**
  * @author Marko A. Rodriguez (http://markorodriguez.com)
  */
-public final class EmptyTraverser<T> implements Traverser<T>, Traverser.Admin<T> {
+@Deprecated public final class EmptyTraverser<T> implements Traverser<T>, Traverser.Admin<T> {
 
     private static final EmptyTraverser INSTANCE = new EmptyTraverser();
 

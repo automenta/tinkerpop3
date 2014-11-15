@@ -28,7 +28,6 @@ public final class CountStep<S> extends AbstractStep<S, Long> implements SideEff
 
         if (!starts.hasNext())
             return null;
-            //throw FastNoSuchElementException.instance();
         
         while (starts.hasNext()) {
             Traverser.Admin<S> next = starts.next();

@@ -61,8 +61,10 @@ public final class JumpStep<S> extends AbstractStep<S, S> implements EngineDepen
             this.jumpBack = TraversalHelper.relativeLabelDirection(this, this.jumpLabel) == -1;
             // TODO: getNextStep() may be dependent on whether its a jump back or a jump forward
         }
-        while (true) {
+        while (starts.hasNext()) {
             final Traverser.Admin<S> traverser = this.starts.next();
+            if (traverser == null) break;
+            
             if (PROFILING_ENABLED) TraversalMetrics.start(this);
             if (this.jumpBack) traverser.incrLoops();
             if (doJump(traverser)) {
@@ -84,6 +86,7 @@ public final class JumpStep<S> extends AbstractStep<S, S> implements EngineDepen
 
             if (PROFILING_ENABLED) TraversalMetrics.stop(this);
         }
+        return null;
     }
 
     private Traverser<S> computerAlgorithm() {
@@ -97,6 +100,9 @@ public final class JumpStep<S> extends AbstractStep<S, S> implements EngineDepen
                 return ret;
             } else {
                 final Traverser.Admin<S> traverser = this.starts.next();
+                if (traverser == null)
+                    break;
+                
                 if (PROFILING_ENABLED) TraversalMetrics.start(this);
 
                 if (this.jumpBack) traverser.incrLoops();
@@ -118,6 +124,7 @@ public final class JumpStep<S> extends AbstractStep<S, S> implements EngineDepen
                 if (PROFILING_ENABLED) TraversalMetrics.stop(this);
             }
         }
+        return null;
     }
 
     public boolean unRollable() {

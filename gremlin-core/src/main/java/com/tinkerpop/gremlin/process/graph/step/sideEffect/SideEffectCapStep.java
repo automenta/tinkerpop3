@@ -53,11 +53,15 @@ public final class SideEffectCapStep<S, E> extends AbstractStep<S, E> implements
     }
 
     private Traverser<E> computerAlgorithm() {
-        while (true) {
-            this.starts.next();
+        while (this.starts.hasNext()) {
+            Traverser.Admin<S> n = this.starts.next();
+            if (n == null)
+                break;
         }
+        return null;
     }
 
+    @Override
     public void onEngine(final TraversalEngine traversalEngine) {
         this.onGraphComputer = traversalEngine.equals(TraversalEngine.COMPUTER);
     }

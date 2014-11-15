@@ -43,10 +43,12 @@ public class BranchStep<S> extends AbstractStep<S, S> implements EngineDependent
     }
 
     private final Traverser<S> computerAlgorithm() {
-        while (true) {
+        while (this.starts.hasNext()) {
             if (!this.graphComputerQueue.isEmpty())
                 return this.graphComputerQueue.remove();
             final Traverser<S> traverser = this.starts.next();
+            if (traverser==null) 
+                break;
             while (!this.functionRing.roundComplete()) {
                 final String goTo = this.functionRing.next().apply(traverser);
                 if (THIS_BREAK_LABEL.equals(goTo)) {
@@ -70,37 +72,40 @@ public class BranchStep<S> extends AbstractStep<S, S> implements EngineDependent
             }
             this.functionRing.reset();
         }
+        return null;
     }
 
     private final Traverser<S> standardAlgorithm() {
         final Traverser<S> traverser = this.starts.next();
-        while (!this.functionRing.roundComplete()) {
-            // TODO: if its a jumpBack, you have to incr the loop prior to the function execution.
-            // TODO: but you don't know if the label is jump back until you execute the function.
-            final String goTo = this.functionRing.next().apply(traverser);
-            if (THIS_BREAK_LABEL.equals(goTo)) {
-                final Traverser.Admin<S> sibling = traverser.asAdmin().makeSibling();
-                sibling.resetLoops();
-                sibling.setFuture(this.getNextStep().getLabel());
-                this.getNextStep().addStart(sibling);
-                break;
-            } else if (THIS_LABEL.equals(goTo)) {
-                final Traverser.Admin<S> sibling = traverser.asAdmin().makeSibling();
-                sibling.resetLoops();
-                sibling.setFuture(this.getNextStep().getLabel());
-                this.getNextStep().addStart(sibling);
-            } else if (!EMPTY_LABEL.equals(goTo)) {
-                final Traverser.Admin<S> sibling = traverser.asAdmin().makeSibling();
-                if (TraversalHelper.relativeLabelDirection(this, goTo) == -1)
-                    sibling.incrLoops();
-                sibling.setFuture(goTo);
-                TraversalHelper.<S, Object>getStep(goTo, this.getTraversal())
-                        .getNextStep()
-                        .addStart((Traverser) sibling);
+        if (traverser!=null) {
+            while (!this.functionRing.roundComplete()) {
+                // TODO: if its a jumpBack, you have to incr the loop prior to the function execution.
+                // TODO: but you don't know if the label is jump back until you execute the function.
+                final String goTo = this.functionRing.next().apply(traverser);
+                if (THIS_BREAK_LABEL.equals(goTo)) {
+                    final Traverser.Admin<S> sibling = traverser.asAdmin().makeSibling();
+                    sibling.resetLoops();
+                    sibling.setFuture(this.getNextStep().getLabel());
+                    this.getNextStep().addStart(sibling);
+                    break;
+                } else if (THIS_LABEL.equals(goTo)) {
+                    final Traverser.Admin<S> sibling = traverser.asAdmin().makeSibling();
+                    sibling.resetLoops();
+                    sibling.setFuture(this.getNextStep().getLabel());
+                    this.getNextStep().addStart(sibling);
+                } else if (!EMPTY_LABEL.equals(goTo)) {
+                    final Traverser.Admin<S> sibling = traverser.asAdmin().makeSibling();
+                    if (TraversalHelper.relativeLabelDirection(this, goTo) == -1)
+                        sibling.incrLoops();
+                    sibling.setFuture(goTo);
+                    TraversalHelper.<S, Object>getStep(goTo, this.getTraversal())
+                            .getNextStep()
+                            .addStart((Traverser) sibling);
+                }
             }
+            this.functionRing.reset();
         }
-        this.functionRing.reset();
-        return EmptyTraverser.instance();
+        return null;
     }
 
     @Override
