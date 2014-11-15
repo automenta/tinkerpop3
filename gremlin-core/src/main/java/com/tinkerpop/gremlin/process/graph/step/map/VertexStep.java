@@ -1,5 +1,6 @@
 package com.tinkerpop.gremlin.process.graph.step.map;
 
+import com.google.common.collect.Iterators;
 import com.tinkerpop.gremlin.process.Traversal;
 import com.tinkerpop.gremlin.process.graph.marker.Reversible;
 import com.tinkerpop.gremlin.process.util.TraversalHelper;
@@ -25,9 +26,17 @@ public class VertexStep<E extends Element> extends FlatMapStep<Vertex, E> implem
         this.edgeLabels = edgeLabels;
         this.returnClass = returnClass;
         if (Vertex.class.isAssignableFrom(this.returnClass))
-            this.setFunction(traverser -> (Iterator<E>) traverser.get().iterators().vertexIterator(this.direction, this.edgeLabels));
+            this.setFunction(traverser -> {
+                if (traverser == null)
+                    return null;
+                return (Iterator<E>) traverser.get().iterators().vertexIterator(this.direction, this.edgeLabels);
+            });
         else
-            this.setFunction(traverser -> (Iterator<E>) traverser.get().iterators().edgeIterator(this.direction, this.edgeLabels));
+            this.setFunction(traverser -> {
+                if (traverser == null)
+                    return null;
+                return (Iterator<E>) traverser.get().iterators().edgeIterator(this.direction, this.edgeLabels);                        
+            });
 
     }
 

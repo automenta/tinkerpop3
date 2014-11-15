@@ -27,9 +27,10 @@ public class FlatMapStep<S, E> extends AbstractStep<S, E> {
     }
 
     @Override
-    protected Traverser<E> processNextStart() {
+    protected Traverser<E> processNextStart() {        
+        
         while (true) {
-            if (this.iterator.hasNext()) {
+            if ((this.iterator!=null) && (this.iterator.hasNext())) {
                 if (PROFILING_ENABLED) TraversalMetrics.start(FlatMapStep.this);
                 final Traverser<E> end = this.head.makeChild(this.label, this.iterator.next());
                 if (PROFILING_ENABLED) TraversalMetrics.finish(FlatMapStep.this, this.head);
@@ -40,6 +41,8 @@ public class FlatMapStep<S, E> extends AbstractStep<S, E> {
                 this.iterator = this.function.apply(this.head);
                 if (PROFILING_ENABLED) TraversalMetrics.stop(this);
             }
+            if (this.iterator == null)
+                return null;
         }
     }
 

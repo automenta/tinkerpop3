@@ -60,8 +60,10 @@ public class TraverserSet<S> extends AbstractSet<Traverser.Admin<S>> implements 
     }
 
     @Override
-    public Traverser.Admin<S> remove() {  // pop, exception if empty
-        return this.map.remove(this.iterator().next());
+    public Traverser.Admin<S> remove() {  // pop, null if empty
+        if (this.iterator().hasNext())
+            return this.map.remove(this.iterator().next());
+        return null;
     }
 
     @Override
@@ -70,8 +72,10 @@ public class TraverserSet<S> extends AbstractSet<Traverser.Admin<S>> implements 
     }
 
     @Override
-    public Traverser.Admin<S> element() { // peek, exception if empty
-        return this.iterator().next();
+    public Traverser.Admin<S> element() { // peek, nullif empty
+        if (this.iterator().hasNext())
+            return this.iterator().next();
+        return null;
     }
 
     @Override

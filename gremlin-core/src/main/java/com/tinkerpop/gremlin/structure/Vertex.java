@@ -68,7 +68,7 @@ public interface Vertex extends Element, VertexTraversal {
         ElementHelper.attachProperties(vertexProperty, keyValues);
         return vertexProperty;
     }
-
+    
     public default <V> VertexProperty<V> singleProperty(final String key, final V value, final Object... keyValues) {
         if (Graph.Key.isHidden(key))
             this.iterators().hiddenPropertyIterator(Graph.Key.unHide(key)).forEachRemaining(VertexProperty::remove);

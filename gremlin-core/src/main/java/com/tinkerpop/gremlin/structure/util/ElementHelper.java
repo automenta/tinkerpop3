@@ -242,8 +242,9 @@ public class ElementHelper {
             throw Graph.Exceptions.argumentCanNotBeNull("vertex");
 
         for (int i = 0; i < propertyKeyValues.length; i = i + 2) {
-            if (!propertyKeyValues[i].equals(T.id) && !propertyKeyValues[i].equals(T.label))
-                vertex.singleProperty((String) propertyKeyValues[i], propertyKeyValues[i + 1]);
+            final String key = (String)propertyKeyValues[i];
+            if (!key.equals(T.id.getAccessor()) && !key.equals(T.label.getAccessor()))
+                vertex.singleProperty(key, propertyKeyValues[i + 1]);
         }
     }
 

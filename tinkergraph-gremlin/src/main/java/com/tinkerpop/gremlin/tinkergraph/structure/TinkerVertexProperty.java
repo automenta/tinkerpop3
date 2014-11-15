@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Marko A. Rodriguez (http://markorodriguez.com)
  */
 public class TinkerVertexProperty<V> extends TinkerElement implements VertexProperty<V>, VertexProperty.Iterators {
-
+    
     private final TinkerVertex vertex;
     private final String key;
     private final V value;
