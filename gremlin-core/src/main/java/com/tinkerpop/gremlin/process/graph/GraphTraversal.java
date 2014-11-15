@@ -644,22 +644,23 @@ public interface GraphTraversal<S, E> extends Traversal<S, E>, CountTraversal<S,
 
     @Override
     public default void remove() {
-        try {
-            this.applyStrategies(TraversalEngine.STANDARD);
-            final Step<?, E> endStep = TraversalHelper.getEnd(this);
-            while (true) {
-                final Object object = endStep.next().get();
-                if (object instanceof Element)
-                    ((Element) object).remove();
-                else if (object instanceof Property)
-                    ((Property) object).remove();
-                else {
-                    throw new IllegalStateException("The following object does not have a remove() method: " + object);
-                }
+        this.applyStrategies(TraversalEngine.STANDARD);
+        final Step<?, E> endStep = TraversalHelper.getEnd(this);
+        while (true) {
+            Traverser<E> n = endStep.next();
+            if (n == null)
+                return;
+            
+            final Object object = n.get();
+            if (object instanceof Element)
+                ((Element) object).remove();
+            else if (object instanceof Property)
+                ((Property) object).remove();
+            else {
+                throw new IllegalStateException("The following object does not have a remove() method: " + object);
             }
-        } catch (final NoSuchElementException ignored) {
-
         }
+
     }
 
     /////////////////////////////////////

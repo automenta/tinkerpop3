@@ -10,7 +10,6 @@ import com.tinkerpop.gremlin.process.util.AbstractStep;
 import com.tinkerpop.gremlin.process.util.FastNoSuchElementException;
 import com.tinkerpop.gremlin.structure.Graph;
 
-import java.util.NoSuchElementException;
 
 /**
  * @author Marko A. Rodriguez (http://markorodriguez.com)
@@ -26,14 +25,19 @@ public final class CountStep<S> extends AbstractStep<S, Long> implements SideEff
     @Override
     public Traverser<Long> processNextStart() {
         long counter = this.getTraversal().sideEffects().getOrCreate(COUNT_KEY, () -> 0l);
-        try {
-            while (true) {
-                counter = counter + this.starts.next().bulk();
-            }
-        } catch (final NoSuchElementException e) {
-            this.getTraversal().sideEffects().set(COUNT_KEY, counter);
+
+        if (!starts.hasNext())
+            return null;
+            //throw FastNoSuchElementException.instance();
+        
+        while (starts.hasNext()) {
+            Traverser.Admin<S> next = starts.next();
+            if (next == null) break;
+            counter = counter + next.bulk();
         }
-        throw FastNoSuchElementException.instance();
+        
+        this.getTraversal().sideEffects().set(COUNT_KEY, counter);
+        return null;        
     }
 
     @Override

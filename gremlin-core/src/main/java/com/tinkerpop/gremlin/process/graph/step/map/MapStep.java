@@ -20,8 +20,11 @@ public class MapStep<S, E> extends AbstractStep<S, E> {
 
     @Override
     protected Traverser<E> processNextStart() {
-        while (true) {
+        while (this.starts.hasNext()) {
             final Traverser.Admin<S> traverser = this.starts.next();
+            if (traverser == null)
+                break;
+            
             if (PROFILING_ENABLED) TraversalMetrics.start(this);
 
             final E end = this.function.apply(traverser);
@@ -33,6 +36,7 @@ public class MapStep<S, E> extends AbstractStep<S, E> {
 
             if (PROFILING_ENABLED) TraversalMetrics.stop(this);
         }
+        return null;
     }
 
     public void setFunction(final Function<Traverser<S>, E> function) {

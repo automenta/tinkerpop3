@@ -29,7 +29,7 @@ public class FlatMapStep<S, E> extends AbstractStep<S, E> {
     @Override
     protected Traverser<E> processNextStart() {        
         
-        while (true) {
+        while (true) {            
             if ((this.iterator!=null) && (this.iterator.hasNext())) {
                 if (PROFILING_ENABLED) TraversalMetrics.start(FlatMapStep.this);
                 final Traverser<E> end = this.head.makeChild(this.label, this.iterator.next());

@@ -242,12 +242,11 @@ public class ElementHelper {
             throw Graph.Exceptions.argumentCanNotBeNull("vertex");
 
         for (int i = 0; i < propertyKeyValues.length; i = i + 2) {
-            final String key = (String)propertyKeyValues[i];
-            if (!key.equals(T.id.getAccessor()) && !key.equals(T.label.getAccessor()))
-                vertex.singleProperty(key, propertyKeyValues[i + 1]);
-        }                
-    }
-
+            final Object key = propertyKeyValues[i];            
+            if (!key.equals(T.id) && !key.equals(T.label))
+                vertex.singleProperty((String) key, propertyKeyValues[i + 1]);
+        }
+    }    
     /**
      * Retrieve the properties associated with a particular element.
      * The result is a Object[] where odd indices are String keys and even indices are the values.
