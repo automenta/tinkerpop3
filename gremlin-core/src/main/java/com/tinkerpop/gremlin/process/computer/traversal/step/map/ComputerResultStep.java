@@ -45,6 +45,9 @@ public final class ComputerResultStep<S> extends AbstractStep<S, S> {
 
     @Override
     public Traverser<S> processNextStart() {
+        if (traversers == null) return null;
+        if (!traversers.hasNext()) return null;
+        
         final Traverser.Admin<S> traverser = this.traversers.next();
         if (this.attachElements && (traverser.get() instanceof Attachable))
             traverser.set((S) ((Attachable) traverser.get()).attach(this.graph));
