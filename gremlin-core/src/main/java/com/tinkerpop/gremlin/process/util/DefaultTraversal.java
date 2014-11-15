@@ -95,10 +95,12 @@ public class DefaultTraversal<S, E> implements Traversal<S, E> {
         }
     }
 
+    @Override
     public String toString() {
         return TraversalHelper.makeTraversalString(this);
     }
 
+    @Override
     public boolean equals(final Object object) {
         return object instanceof Iterator && TraversalHelper.areEqual(this, (Iterator) object);
     }
@@ -107,7 +109,7 @@ public class DefaultTraversal<S, E> implements Traversal<S, E> {
     public DefaultTraversal<S, E> clone() {
         try {
             final DefaultTraversal<S, E> clone = (DefaultTraversal<S, E>) super.clone();
-            clone.steps = new ArrayList<>();
+            clone.steps = new ArrayList<>(steps.size());
             for (int i = this.steps.size() - 1; i >= 0; i--) {
                 final Step<?, ?> clonedStep = this.steps.get(i).clone();
                 clonedStep.setTraversal(clone);

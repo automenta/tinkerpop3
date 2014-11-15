@@ -1,5 +1,6 @@
 package com.tinkerpop.gremlin.process.graph.strategy;
 
+import com.tinkerpop.gremlin.process.Step;
 import com.tinkerpop.gremlin.process.Traversal;
 import com.tinkerpop.gremlin.process.TraversalEngine;
 import com.tinkerpop.gremlin.process.TraversalStrategies;
@@ -7,7 +8,8 @@ import com.tinkerpop.gremlin.process.TraversalStrategy;
 import com.tinkerpop.gremlin.process.TraverserGenerator;
 import com.tinkerpop.gremlin.process.graph.marker.TraverserSource;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Set;
 public class TraverserSourceStrategy extends AbstractTraversalStrategy {
 
     private static final TraverserSourceStrategy INSTANCE = new TraverserSourceStrategy();
-    private static final Set<Class<? extends TraversalStrategy>> PRIORS = new HashSet<>();
+    private static final Set<Class<? extends TraversalStrategy>> PRIORS = new LinkedHashSet<>();
 
     static {
         PRIORS.add(ChooseLinearStrategy.class);
@@ -44,10 +46,21 @@ public class TraverserSourceStrategy extends AbstractTraversalStrategy {
             return;
 
         final TraverserGenerator traverserGenerator = TraversalStrategies.GlobalCache.getStrategies(traversal.getClass()).getTraverserGenerator(traversal, engine);
-        traversal.getSteps()
-                .stream()
-                .filter(step -> step instanceof TraverserSource)
-                .forEach(step -> ((TraverserSource) step).generateTraversers(traverserGenerator));
+
+
+        //Streams are nice, but in this critical section identified by profiling, the for-loop iteration below should perform better
+        
+        /*.stream()
+        .filter(step -> step instanceof TraverserSource)
+        .forEach(step -> ((TraverserSource) step).generateTraversers(traverserGenerator));*/
+        
+        List<Step> steps = traversal.getSteps();        
+        for (int numSteps = steps.size(), i = 0; i < numSteps; i++) {
+            Step step = steps.get(i);
+            if (step instanceof TraverserSource)
+                ((TraverserSource)step).generateTraversers(traverserGenerator);
+        }
+        
     }
 
     @Override

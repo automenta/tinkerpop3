@@ -245,7 +245,7 @@ public class ElementHelper {
             final String key = (String)propertyKeyValues[i];
             if (!key.equals(T.id.getAccessor()) && !key.equals(T.label.getAccessor()))
                 vertex.singleProperty(key, propertyKeyValues[i + 1]);
-        }
+        }                
     }
 
     /**
